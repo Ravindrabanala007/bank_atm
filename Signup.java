@@ -1,4 +1,3 @@
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
@@ -12,9 +11,12 @@ import com.toedter.calendar.JDateChooser;
 import java.awt.Button;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
+import java.sql.*;
 
 public class Signup extends JFrame implements ActionListener {
     JRadioButton jr1, jr2, m1, m2, m3;
@@ -180,21 +182,67 @@ public class Signup extends JFrame implements ActionListener {
         b1.addActionListener(this);
         add(b1);
 
-
         setVisible(true);
 
     }
 
     @Override
-    public void actionPerformed(ActionEvent e){
+    public void actionPerformed(ActionEvent e) {
         try {
-            
-        } 
-        catch(Exception E){
+            String formno = first;
+            String name = t1.getText();
+            String fname = t2.getText();
+            String dob = ((JTextField) datechoser.getDateEditor().getUiComponent()).getText();
+            String gender = (jr1.isSelected()) ? "Male" : jr2.isSelected() ? "Female" : "null";
+            String email = t3.getText();
+            String mari = m1.isSelected() ? "Married" : m2.isSelected() ? "UnMarried" : "Other";
+            String add = t5.getText();
+            String city = t6.getText();
+            String state = t7.getText();
+            String pin = t4.getText();
+
+            if (t1.getText().equals("")) {
+                JOptionPane.showMessageDialog(null, "Fill all the fields");
+            } else {
+
+                // Establish database connection
+                Conn con1 = new Conn();
+
+                // SQL query with placeholders
+                String query = "INSERT INTO signup (form_no, name, father_name, DOB, gender, Email, Married_status, address, city, State, pin) "
+                        +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                // Use PreparedStatement to set parameters safely
+                PreparedStatement pstmt = con1.connection.prepareStatement(query);
+                pstmt.setString(1, formno); // Replace 'formno' with the correct variable
+                pstmt.setString(2, name);
+                pstmt.setString(3, fname);
+                pstmt.setString(4, dob);
+                pstmt.setString(5, gender);
+                pstmt.setString(6, email);
+                pstmt.setString(7, mari);
+                pstmt.setString(8, add);
+                pstmt.setString(9, city);
+                pstmt.setString(10, state);
+                pstmt.setString(11, pin);
+
+                // Execute the query
+                pstmt.executeUpdate();
+
+                // Proceed to next step
+                new Signup2(first);
+                setVisible(false);
+
+                // Close resources
+                pstmt.close();
+                con1.connection.close();
+            }
+
+        } catch (Exception E) {
             E.printStackTrace();
         }
     }
-
 
     public static void main(String args[]) {
         new Signup();
