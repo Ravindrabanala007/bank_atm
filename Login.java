@@ -123,10 +123,9 @@ class Login extends JFrame implements ActionListener {
                 tf1.setText("");
                 pf1.setText("");
             } else if (e.getSource() == b3) {
-
-            } else {
-
-            }
+                new Signup();
+                setVisible(false);
+            } 
         } catch (Exception E) {
             E.printStackTrace();
         }

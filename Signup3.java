@@ -4,24 +4,29 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
+import java.util.Random;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 
 public class Signup3 extends JFrame implements ActionListener {
     JRadioButton r1, r2, r3, r4;
     JCheckBox c1, c2, c3, c4, c5, c6;
     JButton submit, clear;
+    String formno;
 
-    Signup3() {
+    Signup3(String formno) {
         getContentPane().setBackground(new Color(222, 255, 228));
         setLayout(null);
         setSize(850, 800);
         setLocation(450, 30);
+        this.formno = formno;
 
         ImageIcon icon = new ImageIcon(
                 "C:\\Users\\ravin\\OneDrive\\Desktop\\java\\java_bank_project\\bank_icon\\bank.png");
@@ -179,10 +184,94 @@ public class Signup3 extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+        String atype = "";
+        if (r1.isSelected()) {
+            atype = "Saving-Account";
+        } else if (r2.isSelected()) {
+            atype = "Fixed-Deposit";
+        } else if (r3.isSelected()) {
+            atype = "Current-Account";
+        } else if (r4.isSelected()) {
+            atype = "Recurring-Deposit-Account";
+        }
+
+        Random Ran = new Random();
+        long first7 = (Ran.nextLong() % 90000000L) + 1409963000000000L;
+        String cardno = "" + Math.abs(first7);
+
+        long first3 = (Ran.nextLong() % 9000L) + 1000L;
+        String pinno = "" + Math.abs(first3);
+
+        String fac = "";
+        if (c1.isSelected()) {
+            fac += "ATM Card";
+        } else if (c2.isSelected()) {
+            fac += "Internet Banking";
+        } else if (c3.isSelected()) {
+            fac += "Mobile-Banking";
+        } else if (c4.isSelected()) {
+            fac += "Email-Alerts";
+        } else if (c5.isSelected()) {
+            fac += "Cheque Book";
+        } else if (c6.isSelected()) {
+            fac += "E-Statement";
+        }
+        try {
+            if (e.getSource() == submit) {
+                if (atype.equals("") || fac.equals("")) {
+                    JOptionPane.showMessageDialog(null, "Fill all the fields");
+                }
+
+                else {
+
+                    // Establish database connection
+                    Conn con1 = new Conn();
+
+                    // SQL query with placeholders
+                    String query = "INSERT INTO signup3(form_no, acc_type, card_number,pin,facility) "
+                            +
+                            "VALUES (?, ?, ?, ?, ?)";
+                    String q2 = "INSERT INTO login(form_no, card_no,pin) "
+                            +
+                            "VALUES (?, ?, ?)";
+
+                    // Use PreparedStatement to set parameters safely
+                    PreparedStatement pstmt = con1.connection.prepareStatement(query);
+                    pstmt.setString(1, formno); // Replace 'formno' with the correct variable
+                    pstmt.setString(2, atype);
+                    pstmt.setString(3, cardno);
+                    pstmt.setString(4, pinno);
+                    pstmt.setString(5, fac);
+                    // Execute the query
+                    pstmt.executeUpdate();
+                    PreparedStatement pstmt2 = con1.connection.prepareStatement(q2);
+                    pstmt2.setString(1, formno); // Replace 'formno' with the correct variabl
+                    pstmt2.setString(2, cardno);
+                    pstmt2.setString(3, pinno);
+                    // Execute the query
+                    pstmt2.executeUpdate();
+                    // Proceed to next step
+                    JOptionPane.showMessageDialog(null, "Card Number :" + cardno + "\nPin Number :" + pinno);
+
+               new deposit(pinno);
+
+                    // Close resources
+                    pstmt.close();
+                    pstmt2.close();
+                    con1.connection.close();
+                    setVisible(false);
+
+                }
+            } else if (e.getSource() == clear) {
+                System.exit(0);
+            }
+        } catch (Exception E) {
+            E.printStackTrace();
+        }
 
     }
 
     public static void main(String[] args) {
-        new Signup3();
+        new Signup3("1234");
     }
 }

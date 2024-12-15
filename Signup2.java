@@ -4,12 +4,14 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
@@ -190,7 +192,59 @@ public class Signup2 extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+        try {
+            String form_no = formno;
+            String rel = (String) combobox.getSelectedItem();
+            String cato = (String) c2.getSelectedItem();
+            String educ = (String) c4.getSelectedItem();
+            String incom = (String) c3.getSelectedItem();
+            String occup = (String) c5.getSelectedItem();
+            String pan_no = t1.getText();
+            String aadhar_no = t2.getText();
+            String Senio = r1.isSelected() ? "yes" : r1.isSelected() ? "No" : "NULL";
+            String Ex_acc = r3.isSelected() ? "yes" : r4.isSelected() ? "No" : "NULL";
 
+            if (t1.getText().equals("") || t2.getText().equals("")) {
+                JOptionPane.showMessageDialog(null, "Fill all the fields");
+            } else {
+
+                // Establish database connection
+                Conn con1 = new Conn();
+
+                // SQL query with placeholders
+                String query = "INSERT INTO signup2(form_no, religion,caegory, income, education, occupation, pan, aadhar,sinor_citizen, Existing_acc) "
+                        +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                // Use PreparedStatement to set parameters safely
+                PreparedStatement pstmt = con1.connection.prepareStatement(query);
+                pstmt.setString(1, formno); // Replace 'formno' with the correct variable
+                pstmt.setString(2, rel);
+                pstmt.setString(3, cato);
+                pstmt.setString(4, incom);
+                pstmt.setString(5, educ);
+                pstmt.setString(6, occup);
+                pstmt.setString(7, pan_no);
+                pstmt.setString(8, aadhar_no);
+                pstmt.setString(9, Senio);
+                pstmt.setString(10, Ex_acc);
+
+                // Execute the query
+                pstmt.executeUpdate();
+
+                // Proceed to next step
+                new Signup3(formno);
+
+                setVisible(false);
+
+                // Close resources
+                pstmt.close();
+                con1.connection.close();
+            }
+
+        } catch (Exception E) {
+            E.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
