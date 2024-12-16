@@ -3,10 +3,12 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -110,6 +112,7 @@ class Login extends JFrame implements ActionListener {
         setLayout(null);
         setSize(850, 480);
         setLocation(450, 200);
+        setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
@@ -118,7 +121,35 @@ class Login extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         try {
             if (e.getSource() == b1) {
+                String cardno=tf1.getText();
+                char[] pin1=pf1.getPassword();
+                String pin=new String(pin1);
 
+                if (tf1.getText().equals("")|| pin.equals("")) {
+                JOptionPane.showMessageDialog(null, "Fill all the fields");
+                } 
+                else {
+                // Establish database connection
+                Conn con1 = new Conn();
+                
+                // SQL query with placeholders
+                String query = "select * from login where card_no = '"+cardno+"' and pin ='"+pin+"'";
+                ResultSet resultSet=con1.statement.executeQuery(query);
+                if(resultSet.next()){
+                    setVisible(false);
+                    new Main_Class(pin);
+
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Incorrect Card Number or pin");
+                }
+              
+
+                setVisible(false);
+
+                // Close resource
+                con1.connection.close();
+            }   
             } else if (e.getSource() == b2) {
                 tf1.setText("");
                 pf1.setText("");
