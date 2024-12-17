@@ -50,7 +50,7 @@ class Login extends JFrame implements ActionListener {
             imageLabel3.add(imageLabel1); // Add to background label
 
             // Labels
-            label1 = new JLabel("WELCOME TO ATM");
+            label1 = new JLabel("WELCOME TO IRAHAL BANK");
             label1.setForeground(Color.WHITE);
             label1.setFont(new Font("AvantGarde", Font.BOLD, 38));
             label1.setBounds(230, 125, 450, 40);
